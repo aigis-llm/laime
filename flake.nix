@@ -58,6 +58,9 @@
       pyproject-nix,
       pyproject-build-systems,
       uv2nix-hammer-overrides,
+      git-hooks,
+      actions-nix,
+      nix-auto-ci,
       self,
       ...
     }:
@@ -70,8 +73,9 @@
       ];
 
       imports = [
-        inputs.git-hooks.flakeModule
-        inputs.actions-nix.flakeModules.default
+        git-hooks.flakeModule
+        actions-nix.flakeModules.default
+        nix-auto-ci.flakeModule
       ];
 
       flake.actions-nix = {
