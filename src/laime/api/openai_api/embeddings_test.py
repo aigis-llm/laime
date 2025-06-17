@@ -1,6 +1,3 @@
-import hashlib
-import struct
-
 import pytest
 from openai import AsyncOpenAI, UnprocessableEntityError
 
