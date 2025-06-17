@@ -105,11 +105,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1750190838,
-        "narHash": "sha256-Xr2E7IxUKbwdVFWG/B3G8Y+h0ZjLirsnAtFsBFBcnSc=",
+        "lastModified": 1750191060,
+        "narHash": "sha256-0JBSm+6HsrZ0JL4NJ/z2fZ7ndYVHuOyJ1idW03y4MpA=",
         "owner": "aigis-llm",
         "repo": "nix-auto-ci",
-        "rev": "8b28d0fc2542bbd9c55d9baef568b2cf22c0a01e",
+        "rev": "f4d552e56e7dae2587384542ad0ae1f917aca703",
         "type": "github"
       },
       "original": {

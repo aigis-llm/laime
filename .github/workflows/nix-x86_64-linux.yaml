@@ -16,7 +16,7 @@ jobs:
       run: nix run --inputs-from . nixpkgs#lixPackageSets.latest.nix-fast-build --
         --no-nom --flake ".#checks.x86_64-linux" --result-file result.json || true
     - name: transform
-      run: nix shell --inputs-from . .#nix-auto-ci-transform -- result.json
+      run: nix run --inputs-from . .#nix-auto-ci-transform -- result.json
     - name: upload artifact
       uses: actions/upload-artifact@v4
       with:
