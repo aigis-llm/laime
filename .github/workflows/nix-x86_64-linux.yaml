@@ -49,6 +49,7 @@ jobs:
       run: nix run --inputs-from . .#nix-auto-ci-report artifacts/results/result_parsed.json
         ${{ matrix.attr }}
     strategy:
+      fail-fast: false
       matrix:
         attr:
         - lint
