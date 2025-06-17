@@ -1,0 +1,27 @@
+type: http_request
+model: http_request
+id: rq_Zbhs4hFmMu
+createdAt: 2025-04-12T16:58:21.518164864
+updatedAt: 2025-06-16T00:59:34.790138492
+workspaceId: wk_dBnSh3s6HQ
+folderId: fl_VuU3WMqTq4
+authentication: {}
+authenticationType: null
+body:
+  text: |-
+    {
+      "input": ["Hello World!", "a"],
+      "model": "mxbai-embed-large-v1"
+    }
+bodyType: application/json
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: EWq5w0WuaX
+method: POST
+name: Text Embedding List
+sortPriority: 0.0
+url: http://localhost:2001/openai/v1/embeddings
+urlParameters: []

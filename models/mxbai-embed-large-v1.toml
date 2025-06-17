@@ -1,0 +1,7 @@
+[meta]
+name = "mxbai-embed-large-v1"
+backend = "sentence_transformers"
+
+[config]
+model = "mixedbread-ai/mxbai-embed-large-v1"
+device = "cpu"

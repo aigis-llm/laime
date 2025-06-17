@@ -1,0 +1,17 @@
+# Python
+**/__pycache__/
+.*_cache/
+.venv/
+
+# Direnv
+.direnv
+
+# Coverage
+coverage/
+.coverage
+coverage.lcov
+
+# JUnit XML
+junit.xml
+
+results.json

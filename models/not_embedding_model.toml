@@ -1,0 +1,5 @@
+[meta]
+name = "not_embedding_model"
+backend = "none"
+
+[config]
