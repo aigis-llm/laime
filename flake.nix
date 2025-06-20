@@ -108,7 +108,7 @@
             (import ./nix/utils.nix (
               inputs
               // {
-                inherit lib system;
+                inherit lib system inputs;
               }
             ))
             mkShell
