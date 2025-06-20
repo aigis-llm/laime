@@ -2,17 +2,30 @@
   pkgs,
   attrs,
   final,
+  inputs,
+  system,
+  lib,
   ...
 }:
+let
+  utils = (
+    import ./utils.nix (
+      inputs
+      // {
+        inherit system inputs lib;
+      }
+    )
+  );
+in
 {
   tests =
     let
-      virtualenv = final.mkVirtualEnv "laime-testing-env" {
-        laime = [
-          "dev"
-          "cpu"
-        ];
+      pythonSet = utils.mkPythonSet {
+        inherit pkgs;
+        withCUDA = false;
+        editable = true;
       };
+      virtualenv = pythonSet.mkVirtualEnv "laime-testing-env" (utils.getDeps { withCUDA = false; });
     in
     (attrs.tests or { })
     // {
@@ -26,6 +39,7 @@
         dontConfigure = true;
         buildPhase = ''
           runHook preBuild
+          export REPO_ROOT=$PWD
           ${pkgs.expect}/bin/unbuffer just lint &> out || true
           runHook postBuild
         '';
@@ -85,6 +99,7 @@
             #ls -la ./hf-cache/hub/*/*/*
             #false
             export HF_HUB_OFFLINE=1
+            export REPO_ROOT=$PWD
             ${pkgs.expect}/bin/unbuffer just test &> results || true
             runHook postBuild
           '';

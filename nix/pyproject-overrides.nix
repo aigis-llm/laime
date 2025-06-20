@@ -2,6 +2,9 @@
   pkgs,
   uv2nix-hammer-overrides,
   withCUDA,
+  inputs,
+  system,
+  lib,
   ...
 }:
 {
@@ -46,7 +49,18 @@
         #  ++ (if (withCUDA) then [ pkgs.cudaPackages.cusparselt ] else [ ]);
       });
       laime = prev.laime.overrideAttrs (attrs: {
-        passthru = attrs.passthru // (import ./tests.nix { inherit pkgs attrs final; });
+        passthru =
+          attrs.passthru
+          // (import ./tests.nix {
+            inherit
+              pkgs
+              attrs
+              final
+              inputs
+              system
+              lib
+              ;
+          });
       });
     }
   );
