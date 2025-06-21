@@ -59,4 +59,6 @@ jobs:
 name: Nix x86_64-linux
 'on':
   pull_request: {}
-  push: {}
+  push:
+    branches:
+    - main
