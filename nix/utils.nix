@@ -7,6 +7,7 @@
   uv2nix-hammer-overrides,
   lib,
   system,
+  inputs,
   ...
 }:
 let
@@ -37,8 +38,16 @@ let
           dependencies = deps;
         };
         pyprojectOverrides =
-          (import ./pyproject-overrides.nix { inherit uv2nix-hammer-overrides pkgs withCUDA; })
-          .pyprojectOverrides;
+          (import ./pyproject-overrides.nix {
+            inherit
+              uv2nix-hammer-overrides
+              pkgs
+              withCUDA
+              inputs
+              system
+              lib
+              ;
+          }).pyprojectOverrides;
         editableOverlay = workspace.mkEditablePyprojectOverlay {
           # Use environment variable
           root = "$REPO_ROOT";
@@ -145,5 +154,10 @@ let
     });
 in
 {
-  inherit mkShell mkVirtualEnv mkPythonSet;
+  inherit
+    mkShell
+    mkVirtualEnv
+    mkPythonSet
+    getDeps
+    ;
 }
