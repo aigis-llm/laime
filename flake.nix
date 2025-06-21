@@ -76,22 +76,8 @@
         git-hooks.flakeModule
         actions-nix.flakeModules.default
         nix-auto-ci.flakeModule
+        ./nix/ci.nix
       ];
-
-      flake.actions-nix = {
-        defaults = {
-          jobs = {
-            timeout-minutes = 60;
-            runs-on = "ubuntu-latest";
-          };
-        };
-        workflows = {
-          ".github/workflows/nix-x86_64-linux.yaml" = inputs.nix-auto-ci.makeNixGithubAction {
-            flake = self;
-            useLix = true;
-          };
-        };
-      };
 
       perSystem =
         {

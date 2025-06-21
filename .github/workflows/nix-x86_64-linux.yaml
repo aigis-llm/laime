@@ -1,4 +1,27 @@
 jobs:
+  codecov:
+    needs:
+    - fast-build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+    - uses: codecov/codecov-action@v5
+      with:
+        disable_search: true
+        fail_ci_if_error: true
+        files: ./artifacts/results/result-test/coverage.lcov
+        token: ${{ secrets.CODECOV_TOKEN }}
+    - if: ${{ !cancelled() }}
+      uses: codecov/test-results-action@v1
+      with:
+        disable_search: true
+        fail_ci_if_error: true
+        files: ./artifacts/results/result-test/junit.xml
+        token: ${{ secrets.CODECOV_TOKEN }}
+    timeout-minutes: 60
   fast-build:
     runs-on: ubuntu-latest
     steps:
