@@ -60,7 +60,7 @@ async def test_embedding_not_embedding_model_existing_backend(
 		http_client=async_test_client(),
 	)
 	monkeypatch.setattr(
-		"laime.api.openai_api.embeddings.model_backends",
+		"laime.models.model_backends",
 		{"not_embedding_model": NoneBackend(NoneBackendConfig())},
 	)
 	with pytest.raises(UnprocessableEntityError) as excinfo:
