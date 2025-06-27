@@ -5,7 +5,7 @@ from sentence_transformers import SentenceTransformer
 from transformers.models.auto.tokenization_auto import AutoTokenizer
 from transformers.tokenization_utils import PreTrainedTokenizer
 
-from laime.backends.abc import EmbeddingsBackend
+from laime.backends.abc import Backend, EmbeddingsBackend
 
 
 class SentenceTransformersBackendConfig(BaseModel):
@@ -13,7 +13,9 @@ class SentenceTransformersBackendConfig(BaseModel):
 	device: str
 
 
-class SentenceTransformersBackend(EmbeddingsBackend[SentenceTransformersBackendConfig]):
+class SentenceTransformersBackend(
+	Backend[SentenceTransformersBackendConfig], EmbeddingsBackend
+):
 	backend_name: str = "sentence_transformers"
 	backend_config_model = SentenceTransformersBackendConfig  # pyright: ignore [reportUnannotatedClassAttribute]
 	model: SentenceTransformer

@@ -21,9 +21,7 @@ async def create_embeddings(req: Request):
 			status_code=422, detail={"message": "Unable to handle your inputs."}
 		)
 
-	backend = get_backend(  # pyright: ignore [reportUnknownVariableType]
-		body["model"], "embedding", EmbeddingsBackend
-	)
+	backend = get_backend(body["model"], "embedding", EmbeddingsBackend)
 
 	embedding_data: list[Embedding] = []
 	usage = 0
