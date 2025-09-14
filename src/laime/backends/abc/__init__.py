@@ -14,17 +14,17 @@ class Backend[T](ABC):
 
 	@abstractmethod
 	def __init__(self, config: T) -> None:
-		pass
+		pass  # pragma: no cover
 
 
 class EmbeddingsBackend(ABC):
 	@abstractmethod
 	async def embed(self, input: str) -> list[float]:
-		pass
+		pass  # pragma: no cover
 
 	@abstractmethod
 	async def count_tokens(self, input: str) -> int:
-		pass
+		pass  # pragma: no cover
 
 
 class TextGenerationBackend(ABC):
@@ -40,4 +40,4 @@ class TextGenerationBackend(ABC):
 		temperature: float | None,
 		top_p: float | None,
 	) -> AsyncGenerator[Completion]:
-		pass
+		pass  # pragma: no cover
