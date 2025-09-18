@@ -38,7 +38,7 @@
     actions-nix.inputs = {
       nixpkgs.follows = "nixpkgs";
       flake-parts.follows = "flake-parts";
-      pre-commit-hooks.follows = "git-hooks";
+      git-hooks.follows = "git-hooks";
     };
 
     nix-auto-ci.url = "github:aigis-llm/nix-auto-ci";
