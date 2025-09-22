@@ -4,7 +4,7 @@ from openai.types.create_embedding_response import Usage
 from pydantic import TypeAdapter, ValidationError
 
 from laime.backends.abc import EmbeddingsBackend
-from laime.models import get_models, model_backends
+from laime.models import get_backend
 from laime.typeguards import is_str_list
 
 openai_embeddings_router = APIRouter()
@@ -14,35 +14,16 @@ embedding_create_params_ta = TypeAdapter(EmbeddingCreateParams)
 
 @openai_embeddings_router.post("/v1/embeddings")
 async def create_embeddings(req: Request):
-	models = get_models()
 	try:
 		body = embedding_create_params_ta.validate_python(await req.json())
 	except ValidationError:
 		raise HTTPException(
 			status_code=422, detail={"message": "Unable to handle your inputs."}
 		)
-	backend = None
 
-	if not model_backends.get(body["model"]):
-		model = models.get(body["model"])
-		if model is None:
-			raise HTTPException(
-				status_code=422, detail={"message": f"No model {body['model']}."}
-			)
-		if not issubclass(model[0], EmbeddingsBackend):
-			raise HTTPException(
-				status_code=422,
-				detail={"message": f"{body['model']} is not an embedding model."},
-			)
-		backend = model[0](model[1])
-		model_backends[body["model"]] = backend
-	else:
-		backend = model_backends[body["model"]]
-		if not isinstance(backend, EmbeddingsBackend):
-			raise HTTPException(
-				status_code=422,
-				detail={"message": f"{body['model']} is not an embedding model."},
-			)
+	backend = get_backend(  # pyright: ignore [reportUnknownVariableType]
+		body["model"], "embedding", EmbeddingsBackend
+	)
 
 	embedding_data: list[Embedding] = []
 	usage = 0
