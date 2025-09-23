@@ -29,7 +29,7 @@ def get_models():
 
 model_backends: dict[str, Backend[Any]] = {}  # pyright: ignore [reportExplicitAny]
 
-T = TypeVar("T", bound=Backend[BaseModel])
+T = TypeVar("T")
 
 
 def get_backend(model_to_get: str, model_class: str, model_type: type[T]) -> T:

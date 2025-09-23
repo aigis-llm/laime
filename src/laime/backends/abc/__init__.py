@@ -15,7 +15,7 @@ class Backend[T](ABC):
 		pass
 
 
-class EmbeddingsBackend(Backend[T], ABC):
+class EmbeddingsBackend(ABC):
 	@abstractmethod
 	async def embed(self, input: str) -> list[float]:
 		pass
