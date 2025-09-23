@@ -84,6 +84,7 @@ in
         pkgs.stdenv.mkDerivation {
           name = "${final.laime.name}-test";
           inherit (final.laime) src;
+          SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
           nativeBuildInputs = [
             virtualenv
             pkgs.just
