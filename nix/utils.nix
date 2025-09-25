@@ -148,8 +148,6 @@ let
         export UV_NO_SYNC=1
         # Stop uv from downloading python
         export UV_PYTHON_DOWNLOADS=never
-        # llama.cpp
-        export LLAMA_CPP_LIB_PATH=${pkgs.llama-cpp.override { cudaSupport = withCUDA; }}/lib
       '';
     });
 in
