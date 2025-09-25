@@ -1,0 +1,8 @@
+[meta]
+name = "qwen3-0.6b"
+backend = "llama_server"
+
+[config]
+model_path = "./Qwen3-0.6B-Q4_K_M.gguf"
+server_flags = ["--predict", "1"]
+supported_apis = ["completion"]
