@@ -13,18 +13,6 @@
       hatchling = prev.hatchling.overrideAttrs (attrs: {
         propagatedBuildInputs = attrs.propagatedBuildInputs or [ ] ++ [ final.editables ];
       });
-      llama-cpp-python = prev.llama-cpp-python.overrideAttrs (attrs: {
-        CMAKE_ARGS = [ "-DLLAMA_BUILD=OFF" ];
-        propagatedBuildInputs = attrs.propagatedBuildInputs or [ ] ++ [
-          pkgs.cmake
-          pkgs.git
-        ];
-        nativeBuildInputs =
-          attrs.nativeBuildInputs or [ ]
-          ++ (final.resolveBuildSystem {
-            scikit-build-core = [ ];
-          });
-      });
       torch = prev.torch.overrideAttrs (attrs: {
         buildInputs =
           if (withCUDA) then
