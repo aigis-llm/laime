@@ -134,6 +134,7 @@ let
           withCUDA = withCUDA;
           editable = true;
         })
+        (pkgs.llama-cpp.override { cudaSupport = withCUDA; })
         pkgs.uv
       ];
 
