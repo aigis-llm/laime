@@ -14,7 +14,7 @@
     workflows = {
       ".github/workflows/nix-x86_64-linux.yaml" = (
         lib.recursiveUpdate
-          (inputs.nix-auto-ci.makeNixGithubAction {
+          (inputs.nix-auto-ci.lib.makeNixGithubAction {
             flake = inputs.self;
             useLix = true;
           })

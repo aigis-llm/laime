@@ -44,11 +44,9 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: results
-        path: './result_parsed.json
-
+        path: |-
+          ./result_parsed.json
           ./result-*
-
-          '
     timeout-minutes: 60
   report:
     needs:
