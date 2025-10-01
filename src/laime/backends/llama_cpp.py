@@ -63,8 +63,11 @@ class LlamaServerBackend(
 		)
 		_ = atexit.register(self.__del__)
 		while True:
-			if httpx.get(f"http://localhost:{self.port}/health").status_code == 200:
-				break
+			try:
+				if httpx.get(f"http://localhost:{self.port}/health").status_code == 200:
+					break
+			except httpx.ConnectError:  # pragma: no cover
+				pass
 
 	@override
 	async def embed(self, input: str) -> list[float]:
