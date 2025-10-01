@@ -1,0 +1,8 @@
+[meta]
+name = "qwen3-0.6b-embedding"
+backend = "llama_server"
+
+[config]
+model_path = "./Qwen3-Embedding-0.6B-Q8_0.gguf"
+server_flags = ["--embeddings", "-v"]
+supported_apis = ["embeddings"]

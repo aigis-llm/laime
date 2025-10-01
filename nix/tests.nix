@@ -80,6 +80,14 @@ in
             outputHashMode = "recursive";
             outputHash = "sha256-ptGf339X5W2Cgs/uE1gD1hnVS8S/DPhhTO7AUMR30QU=";
           };
+          qwen3 = pkgs.fetchurl {
+            url = "https://huggingface.co/unsloth/Qwen3-0.6B-GGUF/resolve/50968a4468ef4233ed78cd7c3de230dd1d61a56b/Qwen3-0.6B-Q4_K_M.gguf?download=true";
+            hash = "sha256-rC2XcSCVpVjjFXP2L0ZqP52TmQiYsOx518l0wXgNUko=";
+          };
+          qwen3_embedding = pkgs.fetchurl {
+            url = "https://huggingface.co/Qwen/Qwen3-Embedding-0.6B-GGUF/resolve/370f27d7550e0def9b39c1f16d3fbaa13aa67728/Qwen3-Embedding-0.6B-Q8_0.gguf?download=true";
+            hash = "sha256-BlB8e0JohGnE5ymLCh4W3v8GyvKRzwpbJ4wwgknD5Dk=";
+          };
         in
         pkgs.stdenv.mkDerivation {
           name = "${final.laime.name}-test";
@@ -88,6 +96,7 @@ in
           nativeBuildInputs = [
             virtualenv
             pkgs.just
+            pkgs.llama-cpp
           ];
           dontConfigure = true;
           dontBuild = true;
@@ -97,6 +106,8 @@ in
             mkdir ./hf-cache
             export HF_HOME="./hf-cache"
             cp -r ${mxbai-embed-large-v1} ./hf-cache/hub/
+            cp -r ${qwen3} ./models/Qwen3-0.6B-Q4_K_M.gguf
+            cp -r ${qwen3_embedding} ./models/Qwen3-Embedding-0.6B-Q8_0.gguf
             #ls -la ./hf-cache/hub/*/*/*
             #false
             export HF_HUB_OFFLINE=1
