@@ -6,6 +6,15 @@ from subprocess import PIPE, Popen
 from typing import override
 
 import httpx
+from openai import NotGiven
+from openai.types.chat import (
+	ChatCompletionChunk,
+	ChatCompletionMessageParam,
+	ChatCompletionStreamOptionsParam,
+	ChatCompletionToolChoiceOptionParam,
+	ChatCompletionToolParam,
+)
+from openai.types.chat.completion_create_params import ResponseFormat
 from openai.types.completion import Completion
 from pydantic import BaseModel
 
@@ -97,6 +106,38 @@ class LlamaServerBackend(
 			seed,
 			stop,
 			temperature,
+			top_p,
+		):
+			yield chunk
+
+	@override
+	async def chat_completion(
+		self,
+		messages: Iterable[ChatCompletionMessageParam],
+		frequency_penalty: float | None,
+		logit_bias: dict[str, int] | None,
+		max_completion_tokens: int | None,
+		presence_penalty: float | None,
+		response_format: ResponseFormat | NotGiven,
+		stop: str | list[str] | None,
+		stream_options: ChatCompletionStreamOptionsParam | None,
+		temperature: float | None,
+		tool_choice: ChatCompletionToolChoiceOptionParam | NotGiven,
+		tools: Iterable[ChatCompletionToolParam] | NotGiven,
+		top_p: float | None,
+	) -> AsyncGenerator[ChatCompletionChunk]:
+		async for chunk in self.openai_proxy.chat_completion(
+			messages,
+			frequency_penalty,
+			logit_bias,
+			max_completion_tokens,
+			presence_penalty,
+			response_format,
+			stop,
+			stream_options,
+			temperature,
+			tool_choice,
+			tools,
 			top_p,
 		):
 			yield chunk

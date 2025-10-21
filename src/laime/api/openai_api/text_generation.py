@@ -3,6 +3,10 @@ from typing import cast
 
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
+from openai import NOT_GIVEN
+from openai.types.chat.completion_create_params import (
+	CompletionCreateParams as ChatCompletionCreateParams,
+)
 from openai.types.completion_create_params import CompletionCreateParams
 from pydantic import TypeAdapter, ValidationError
 
@@ -13,6 +17,10 @@ openai_text_generation_router = APIRouter()
 
 completion_create_params_ta: TypeAdapter[CompletionCreateParams] = TypeAdapter(
 	CompletionCreateParams
+)
+
+chat_completion_create_params_ta: TypeAdapter[ChatCompletionCreateParams] = TypeAdapter(
+	ChatCompletionCreateParams
 )
 
 
@@ -39,6 +47,65 @@ async def create_completion(req: Request):
 				seed=body.get("seed"),
 				stop=body.get("stop"),
 				temperature=body.get("temperature"),
+				top_p=body.get("top_p"),
+			):
+				yield f"data: {completion.to_json(indent=None)}\n\n"
+		except HTTPException as ex:
+			yield f"data: {
+				json.dumps(
+					{
+						'error': {
+							'type': 'server_error',
+							'code': ex.status_code,
+							'message': cast(dict[str, object], cast(object, ex.detail))[
+								'message'
+							],
+						}
+					},
+					indent=None,
+				)
+			}\n\n"
+		finally:
+			yield "data: [DONE]\n\n"
+
+	if not body.get("stream", False):
+		raise HTTPException(
+			status_code=422,
+			detail={
+				"message": "laime currently does not support non-streaming responses."
+			},
+		)
+	else:
+		return StreamingResponse(stream(), media_type="text/event-stream")
+
+
+@openai_text_generation_router.post("/v1/chat/completions")
+async def create_chat_completion(req: Request):
+	try:
+		body: ChatCompletionCreateParams = (
+			chat_completion_create_params_ta.validate_python(await req.json())
+		)
+	except ValidationError:
+		raise HTTPException(
+			status_code=422, detail={"message": "Unable to handle your inputs."}
+		)
+
+	backend = get_backend(body["model"], "text generation", TextGenerationBackend)
+
+	async def stream():
+		try:
+			async for completion in backend.chat_completion(
+				messages=body.get("messages"),
+				frequency_penalty=body.get("frequency_penalty"),
+				logit_bias=body.get("logit_bias"),
+				max_completion_tokens=body.get("max_completion_tokens"),
+				presence_penalty=body.get("presence_penalty"),
+				response_format=body.get("response_format", NOT_GIVEN),
+				stop=body.get("stop"),
+				stream_options=body.get("stream_options"),
+				temperature=body.get("temperature"),
+				tool_choice=body.get("tool_choice", NOT_GIVEN),
+				tools=body.get("tools", NOT_GIVEN),
 				top_p=body.get("top_p"),
 			):
 				yield f"data: {completion.to_json(indent=None)}\n\n"

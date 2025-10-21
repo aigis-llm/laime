@@ -2,6 +2,15 @@ from abc import ABC, abstractmethod
 from collections.abc import AsyncGenerator, Iterable
 from typing import TypeVar
 
+from openai import NotGiven
+from openai.types.chat import (
+	ChatCompletionChunk,
+	ChatCompletionMessageParam,
+	ChatCompletionStreamOptionsParam,
+	ChatCompletionToolChoiceOptionParam,
+	ChatCompletionToolParam,
+)
+from openai.types.chat.completion_create_params import ResponseFormat
 from openai.types.completion import Completion
 from pydantic import BaseModel
 
@@ -40,4 +49,22 @@ class TextGenerationBackend(ABC):
 		temperature: float | None,
 		top_p: float | None,
 	) -> AsyncGenerator[Completion]:
+		pass  # pragma: no cover
+
+	@abstractmethod
+	def chat_completion(
+		self,
+		messages: Iterable[ChatCompletionMessageParam],
+		frequency_penalty: float | None,
+		logit_bias: dict[str, int] | None,
+		max_completion_tokens: int | None,
+		presence_penalty: float | None,
+		response_format: ResponseFormat | NotGiven,
+		stop: str | list[str] | None,
+		stream_options: ChatCompletionStreamOptionsParam | None,
+		temperature: float | None,
+		tool_choice: ChatCompletionToolChoiceOptionParam | NotGiven,
+		tools: Iterable[ChatCompletionToolParam] | NotGiven,
+		top_p: float | None,
+	) -> AsyncGenerator[ChatCompletionChunk]:
 		pass  # pragma: no cover
