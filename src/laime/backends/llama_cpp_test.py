@@ -29,6 +29,29 @@ async def test_completion_create():
 
 @pytest.mark.anyio
 @pytest.mark.parametrize("anyio_backend", ["asyncio"])
+async def test_chat_completion_create():
+	openai = AsyncOpenAI(
+		base_url="http://laime_test/openai/v1",
+		api_key="test",
+		http_client=async_test_client(),
+	)
+	token_count = 0
+
+	async for chunk in await openai.chat.completions.create(
+		model="qwen3-0.6b",
+		messages=[{"content": "Say this is a test", "role": "user"}],
+		temperature=0,
+		max_tokens=1,
+		stream=True,
+	):
+		print(chunk)
+		token_count = token_count + 1
+		if token_count == 1:
+			break
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("anyio_backend", ["asyncio"])
 async def test_embedding_create():
 	openai = AsyncOpenAI(
 		base_url="http://laime_test/openai/v1",

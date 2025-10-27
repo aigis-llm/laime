@@ -1,6 +1,8 @@
 import pytest
 from openai import APIError, AsyncOpenAI, UnprocessableEntityError
 from openai.types import CompletionChoice
+from openai.types.chat import ChatCompletionChunk
+from openai.types.chat.chat_completion_chunk import Choice, ChoiceDelta
 from openai.types.completion import Completion
 
 from laime.api.openai_api.text_generation_test import (
@@ -110,6 +112,9 @@ async def test_completion_create(
 			object="text_completion",
 		)
 
+	async def noop():
+		pass  # pragma: no cover
+
 	openai = AsyncOpenAI(
 		base_url="http://laime_test/openai/v1",
 		api_key="test",
@@ -130,7 +135,10 @@ async def test_completion_create(
 		"laime.models.model_backends",
 		{
 			"textgen_test": TextGenTestBackend(
-				TextGenTestBackendConfig(next_completion_func=next_completion_func)
+				TextGenTestBackendConfig(
+					next_completion_func=next_completion_func,
+					next_chat_completion_func=noop,  # pyright: ignore [reportArgumentType]
+				)
 			),
 			"openai_proxy": openai_proxy,
 		},
@@ -191,4 +199,114 @@ async def test_completion_fail(
 		"type": "server_error",
 		"code": 422,
 		"message": "no_model is not a completion model.",
+	}
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("anyio_backend", ["asyncio"])
+async def test_chat_completion_create(
+	monkeypatch: pytest.MonkeyPatch,
+):
+	async def next_chat_completion_func():
+		return ChatCompletionChunk(
+			id="test0",
+			choices=[
+				Choice(
+					finish_reason="length", delta=ChoiceDelta(content="World!"), index=0
+				)
+			],
+			created=0,
+			model="",
+			object="chat.completion.chunk",
+		)
+
+	async def noop():
+		pass  # pragma: no cover
+
+	openai = AsyncOpenAI(
+		base_url="http://laime_test/openai/v1",
+		api_key="test",
+		http_client=async_test_client(),
+	)
+
+	openai_proxy = OpenAIProxyBackend(
+		OpenAIProxyBackendConfig(
+			endpoint="http://laime_test/openai/v1",
+			api_key_env_var="",
+			model_name="textgen_test",
+			supported_apis=["chat_completion"],
+		)
+	)
+	openai_proxy.openai_client = openai
+
+	monkeypatch.setattr(
+		"laime.models.model_backends",
+		{
+			"textgen_test": TextGenTestBackend(
+				TextGenTestBackendConfig(
+					next_completion_func=noop,  # pyright: ignore [reportArgumentType]
+					next_chat_completion_func=next_chat_completion_func,
+				)
+			),
+			"openai_proxy": openai_proxy,
+		},
+	)
+
+	async for chunk in await openai.chat.completions.create(
+		model="openai_proxy",
+		messages=[{"content": "Hello ", "role": "user"}],
+		stream=True,
+	):
+		assert chunk == ChatCompletionChunk(
+			id="test0",
+			choices=[
+				Choice(
+					finish_reason="length", delta=ChoiceDelta(content="World!"), index=0
+				),
+			],
+			created=0,
+			model="",
+			object="chat.completion.chunk",
+			system_fingerprint=None,
+			usage=None,
+		)
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("anyio_backend", ["asyncio"])
+async def test_chat_completion_fail(
+	monkeypatch: pytest.MonkeyPatch,
+):
+	openai = AsyncOpenAI(
+		base_url="http://laime_test/openai/v1",
+		api_key="test",
+		http_client=async_test_client(),
+	)
+
+	openai_proxy = OpenAIProxyBackend(
+		OpenAIProxyBackendConfig(
+			endpoint="http://laime_test/openai/v1",
+			api_key_env_var="",
+			model_name="no_model",
+			supported_apis=[],
+		)
+	)
+	openai_proxy.openai_client = openai
+
+	monkeypatch.setattr(
+		"laime.models.model_backends",
+		{
+			"openai_proxy": openai_proxy,
+		},
+	)
+
+	with pytest.raises(APIError) as excinfo:
+		async for chunk in await openai.chat.completions.create(
+			model="openai_proxy", messages=[], stream=True
+		):
+			pass  # pragma: no cover
+	assert excinfo.value.body == {
+		"type": "server_error",
+		"code": 422,
+		"message": "no_model is not a chat completion model.",
 	}
